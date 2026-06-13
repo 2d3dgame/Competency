@@ -237,6 +237,36 @@
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* 진행률 바 */
+  .progress-wrap {
+    display: none;
+    margin-top: 0.75rem;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #9a7060;
+    margin-bottom: 6px;
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 10px;
+    background: #F5D9C8;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #D4500A, #FF8C42);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+  }
+
   /* 제출 목록 */
   .list-card {
     background: white;
@@ -479,12 +509,12 @@
     </div>
 
     <div class="form-group">
-      <label>동영상 파일 첨부 <span class="required">*</span></label>
+      <label>파일 첨부 <span class="required">*</span></label>
       <div class="file-drop-area" id="dropArea">
-        <input type="file" id="fileInput" accept="video/*,.mp4,.mov,.avi,.mkv,.wmv">
+        <input type="file" id="fileInput">
         <div class="icon">🎬</div>
         <p>클릭하거나 파일을 여기에 끌어다 놓으세요</p>
-        <div class="file-hint">동영상 파일 (mp4, mov, avi 등) | 최대 200MB</div>
+        <div class="file-hint">모든 파일 형식 허용 | 최대 300MB</div>
       </div>
       <div class="file-selected" id="fileSelected">
         <span>🎬</span>
@@ -497,7 +527,20 @@
 
     <div class="status-bar" id="statusBar">
       <div class="spinner" id="spinner"></div>
-      <span id="statusText">구글 드라이브에 업로드 중...</span>
+      <span id="statusText">파일 읽는 중...</span>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-label">
+        <span id="progressStep">파일 준비 중...</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div style="margin-top:8px; font-size:0.8rem; color:#9a7060; text-align:center;">
+        ☕ 파일 용량이 클 경우 시간이 걸릴 수 있습니다. 완료될 때까지 창을 닫지 말고 느긋하게 기다려 주세요!
+      </div>
     </div>
   </div>
 
@@ -535,7 +578,7 @@
 </div>
 
 <footer>
-  문의사항은 카페 게시판 답글로 남겨주세요.
+  문의사항은 1:1 톡으로 주세요.
 </footer>
 
 <script>
@@ -574,8 +617,8 @@ function updateSubmitBtn() {
 
 function setFile(file) {
   if (!file) return;
-  if (file.size > 200 * 1024 * 1024) {
-    alert('파일 크기는 최대 200MB까지 허용됩니다.');
+  if (file.size > 300 * 1024 * 1024) {
+    alert('파일 크기는 최대 300MB까지 허용됩니다.');
     return;
   }
   selectedFile = file;
@@ -604,7 +647,31 @@ fileRemoveBtn.addEventListener('click', e => {
 studentIdInput.addEventListener('input', updateSubmitBtn);
 studentNameInput.addEventListener('input', updateSubmitBtn);
 
-btnSubmit.addEventListener('click', async () => {
+function setProgress(pct, stepText) {
+  const fill = document.getElementById('progressFill');
+  const pctEl = document.getElementById('progressPct');
+  const stepEl = document.getElementById('progressStep');
+  fill.style.width = pct + '%';
+  pctEl.textContent = pct + '%';
+  stepEl.textContent = stepText;
+}
+
+// 업로드 중 진행률 애니메이션 (40% → 95% 서서히)
+let progressTimer = null;
+function startUploadAnimation() {
+  let current = 40;
+  progressTimer = setInterval(() => {
+    if (current < 93) {
+      current += (93 - current) * 0.04; // 점점 느려지는 애니메이션
+      setProgress(Math.round(current), '구글 드라이브에 저장 중...');
+    }
+  }, 300);
+}
+function stopUploadAnimation() {
+  if (progressTimer) { clearInterval(progressTimer); progressTimer = null; }
+}
+
+btnSubmit.addEventListener('click', () => {
   const studentId = studentIdInput.value.trim();
   const studentName = studentNameInput.value.trim();
   if (!studentId || !studentName || !selectedFile) return;
@@ -613,61 +680,96 @@ btnSubmit.addEventListener('click', async () => {
   statusBar.className = 'status-bar';
   statusBar.style.display = 'flex';
   spinner.style.display = 'block';
-  statusText.textContent = '구글 드라이브에 업로드 중... (동영상은 시간이 걸릴 수 있습니다)';
+  statusText.textContent = '파일 읽는 중...';
+  document.getElementById('progressWrap').style.display = 'block';
+  setProgress(0, '파일 읽는 중...');
 
-  try {
-    const reader = new FileReader();
-    reader.onload = async () => {
+  // 1단계: FileReader (진행률 0~40%, 실제 진행률)
+  const reader = new FileReader();
+
+  reader.onprogress = (e) => {
+    if (e.lengthComputable) {
+      const pct = Math.round((e.loaded / e.total) * 40);
+      setProgress(pct, '파일 읽는 중...');
+    }
+  };
+
+  reader.onload = async () => {
+    setProgress(40, '구글 드라이브에 저장 중...');
+    statusText.textContent = '구글 드라이브에 저장 중...';
+
+    // 2단계: fetch 업로드 + 진행률 애니메이션 (40~95%)
+    startUploadAnimation();
+
+    try {
       const base64 = reader.result.split(',')[1];
-      const payload = {
-        studentId,
-        studentName,
-        fileName: selectedFile.name,
-        fileData: base64,
-        mimeType: selectedFile.type || 'video/mp4',
-        submittedAt: new Date().toISOString(),
-      };
-
       const res = await fetch(CONFIG.GAS_URL, {
         method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      const result = await res.json();
-
-      if (result.status === 'ok') {
-        const record = {
+        body: JSON.stringify({
           studentId,
           studentName,
           fileName: selectedFile.name,
-          submittedAt: new Date().toLocaleString('ko-KR'),
-        };
-        submissions.unshift(record);
-        localStorage.setItem('video_submissions', JSON.stringify(submissions));
-        renderList();
+          fileData: base64,
+          mimeType: selectedFile.type || 'application/octet-stream',
+          submittedAt: new Date().toISOString(),
+        }),
+      });
 
-        statusBar.style.display = 'none';
-        document.getElementById('successMsg').textContent =
-          `${studentName}(${studentId}) 학생의 동영상이 정상적으로 제출되었습니다.`;
-        successOverlay.style.display = 'flex';
+      stopUploadAnimation();
+      const result = await res.json();
 
-        studentIdInput.value = '';
-        studentNameInput.value = '';
-        selectedFile = null;
-        fileInput.value = '';
-        fileSelected.style.display = 'none';
-        updateSubmitBtn();
+      if (result.status === 'ok') {
+        setProgress(100, '완료!');
+        statusText.textContent = '완료!';
+
+        setTimeout(() => {
+          const record = {
+            studentId,
+            studentName,
+            fileName: selectedFile.name,
+            submittedAt: new Date().toLocaleString('ko-KR'),
+          };
+          submissions.unshift(record);
+          localStorage.setItem('video_submissions', JSON.stringify(submissions));
+          renderList();
+
+          statusBar.style.display = 'none';
+          document.getElementById('progressWrap').style.display = 'none';
+          setProgress(0, '');
+          document.getElementById('successMsg').textContent =
+            `${studentName}(${studentId}) 학생의 파일이 정상적으로 제출되었습니다.`;
+          successOverlay.style.display = 'flex';
+
+          studentIdInput.value = '';
+          studentNameInput.value = '';
+          selectedFile = null;
+          fileInput.value = '';
+          fileSelected.style.display = 'none';
+          updateSubmitBtn();
+        }, 600);
+
       } else {
         throw new Error(result.message || '업로드 실패');
       }
-    };
-    reader.readAsDataURL(selectedFile);
-  } catch (err) {
+    } catch (err) {
+      stopUploadAnimation();
+      statusBar.className = 'status-bar error';
+      spinner.style.display = 'none';
+      statusText.textContent = '오류가 발생했습니다: ' + err.message;
+      document.getElementById('progressWrap').style.display = 'none';
+      btnSubmit.disabled = false;
+    }
+  };
+
+  reader.onerror = () => {
     statusBar.className = 'status-bar error';
     spinner.style.display = 'none';
-    statusText.textContent = '오류가 발생했습니다: ' + err.message;
+    statusText.textContent = '파일 읽기에 실패했습니다.';
+    document.getElementById('progressWrap').style.display = 'none';
     btnSubmit.disabled = false;
-  }
+  };
+
+  reader.readAsDataURL(selectedFile);
 });
 
 function renderList() {
