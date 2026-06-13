@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026년 1학년 1학기 전공역량평가 발표 동영상 제출 | 게임콘텐츠스쿨 1학년</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #f5f6fa;
+    color: #1a1a2e;
+    min-height: 100vh;
+  }
+
+  header {
+    background: #D4500A;
+    color: white;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  header .school {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  header .subtitle {
+    font-size: 0.85rem;
+    opacity: 0.65;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* 제출 폼 */
+  .submit-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #F5D9C8;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(31,56,100,0.06);
+  }
+
+  .submit-card h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #D4500A;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .submit-card h2::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background: #D4500A;
+    border-radius: 2px;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 0.4rem;
+  }
+
+  label .required {
+    color: #c0392b;
+    margin-left: 3px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid #E8C8B8;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: #FFFAF8;
+    color: #1a1a2e;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  input[type="text"]:focus {
+    border-color: #D4500A;
+    background: white;
+  }
+
+  .file-drop-area {
+    border: 2px dashed #E8C8B0;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #FFF9F5;
+    position: relative;
+  }
+
+  .file-drop-area:hover,
+  .file-drop-area.drag-over {
+    border-color: #D4500A;
+    background: #FEF0E8;
+  }
+
+  .file-drop-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .file-drop-area .icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #9a7060;
+  }
+
+  .file-drop-area p {
+    font-size: 0.88rem;
+    color: #9a7060;
+  }
+
+  .file-drop-area .file-hint {
+    font-size: 0.78rem;
+    color: #C4A898;
+    margin-top: 0.3rem;
+  }
+
+  .file-selected {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 0.75rem 1rem;
+    background: #FEF0E8;
+    border-radius: 8px;
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: #D4500A;
+  }
+
+  .file-selected .file-name {
+    flex: 1;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    font-size: 1.1rem;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 0.85rem;
+    background: #D4500A;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-submit:hover { background: #B8420A; }
+  .btn-submit:active { transform: scale(0.99); }
+  .btn-submit:disabled { background: #9aa3bf; cursor: not-allowed; }
+
+  /* 진행 상태 */
+  .status-bar {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 0.75rem 1rem;
+    background: #fff8e1;
+    border: 1px solid #f9c84a;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: #7a5c00;
+  }
+
+  .status-bar.success {
+    background: #e8f5e9;
+    border-color: #66bb6a;
+    color: #2e7d32;
+  }
+
+  .status-bar.error {
+    background: #ffebee;
+    border-color: #ef9a9a;
+    color: #b71c1c;
+  }
+
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid #f9c84a;
+    border-top-color: #7a5c00;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* 제출 목록 */
+  .list-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #F5D9C8;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(31,56,100,0.06);
+  }
+
+  .list-header {
+    padding: 1.25rem 1.5rem;
+    background: #FFF5EE;
+    border-bottom: 1px solid #F5D9C8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .list-header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #D4500A;
+  }
+
+  .list-header .count-badge {
+    background: #D4500A;
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .list-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-admin {
+    background: none;
+    border: 1px solid #dde2f0;
+    border-radius: 6px;
+    color: #C4A898;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-admin:hover {
+    border-color: #c0392b;
+    color: #c0392b;
+    background: #fff5f5;
+  }
+
+  .admin-panel {
+    display: none;
+    padding: 1rem 1.5rem;
+    background: #fff8f8;
+    border-bottom: 1px solid #fde0e0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .admin-panel input[type="password"] {
+    padding: 0.45rem 0.75rem;
+    border: 1px solid #f0c0c0;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #1a1a2e;
+    background: white;
+    outline: none;
+    width: 160px;
+  }
+
+  .admin-panel input[type="password"]:focus {
+    border-color: #c0392b;
+  }
+
+  .btn-clear {
+    padding: 0.45rem 1rem;
+    background: #c0392b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-clear:hover { background: #a93226; }
+
+  .admin-msg {
+    font-size: 0.8rem;
+    color: #c0392b;
+    min-width: 80px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  thead th {
+    background: #FFF9F5;
+    padding: 0.75rem 1.25rem;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #9a7060;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #F5E0D0;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #FFF5EE;
+    transition: background 0.15s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #FFF9F5; }
+
+  td {
+    padding: 0.85rem 1.25rem;
+    color: #2c3150;
+  }
+
+  td .team-name {
+    font-weight: 600;
+    color: #D4500A;
+  }
+
+  td .date-text {
+    color: #9a7060;
+    font-size: 0.85rem;
+  }
+
+  td .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #C4A898;
+    font-size: 0.9rem;
+  }
+
+  /* 성공 팝업 */
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .success-modal {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    max-width: 340px;
+    width: 90%;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  }
+
+  .success-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .success-modal h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #D4500A;
+    margin-bottom: 0.5rem;
+  }
+
+  .success-modal p {
+    font-size: 0.88rem;
+    color: #9a7060;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-close-modal {
+    padding: 0.6rem 2rem;
+    background: #D4500A;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: #C4A898;
+    font-size: 0.78rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="school">청강문화산업대학교 게임콘텐츠스쿨 1학년</div>
+  <h1>2026년 1학년 1학기 전공역량평가 발표 동영상 제출</h1>
+  <div class="subtitle">얼굴 없이 PPT 화면과 음성만으로 진행하는 발표입니다. 발표 시간은 최대 5분을 넘지 않도록 해주세요.</div>
+</header>
+
+<div class="container">
+
+  <!-- 제출 폼 -->
+  <div class="submit-card">
+    <h2>동영상 제출</h2>
+
+    <div style="display:flex; gap:12px;">
+      <div class="form-group" style="flex:1">
+        <label>학번 <span class="required">*</span></label>
+        <input type="text" id="studentId" placeholder="예: 202601234" autocomplete="off" maxlength="10">
+      </div>
+      <div class="form-group" style="flex:1">
+        <label>이름 <span class="required">*</span></label>
+        <input type="text" id="studentName" placeholder="예: 이청강" autocomplete="off" maxlength="10">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>동영상 파일 첨부 <span class="required">*</span></label>
+      <div class="file-drop-area" id="dropArea">
+        <input type="file" id="fileInput" accept="video/*,.mp4,.mov,.avi,.mkv,.wmv">
+        <div class="icon">🎬</div>
+        <p>클릭하거나 파일을 여기에 끌어다 놓으세요</p>
+        <div class="file-hint">동영상 파일 (mp4, mov, avi 등) | 최대 200MB</div>
+      </div>
+      <div class="file-selected" id="fileSelected">
+        <span>🎬</span>
+        <span class="file-name" id="fileName"></span>
+        <button class="file-remove" id="fileRemove" title="파일 제거">✕</button>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="btnSubmit" disabled>제출하기</button>
+
+    <div class="status-bar" id="statusBar">
+      <div class="spinner" id="spinner"></div>
+      <span id="statusText">구글 드라이브에 업로드 중...</span>
+    </div>
+  </div>
+
+  <!-- 제출 목록 -->
+  <div class="list-card">
+    <div class="list-header">
+      <h2>제출 현황</h2>
+      <div class="list-header-right">
+        <span class="count-badge" id="countBadge">0건</span>
+        <button class="btn-admin" onclick="toggleAdminPanel()">관리자</button>
+      </div>
+    </div>
+    <div class="admin-panel" id="adminPanel">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="password" id="adminPw" placeholder="관리자 비밀번호" onkeydown="if(event.key==='Enter')clearList()">
+        <button class="btn-clear" onclick="clearList()">목록 초기화</button>
+      </div>
+      <span class="admin-msg" id="adminMsg"></span>
+    </div>
+    <div id="listArea">
+      <div class="empty-state">아직 제출된 동영상이 없습니다.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 성공 팝업 -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-modal">
+    <div class="success-icon">✅</div>
+    <h3>제출 완료!</h3>
+    <p id="successMsg">전공역량평가 동영상이 정상적으로 제출되었습니다.</p>
+    <button class="btn-close-modal" onclick="closeModal()">확인</button>
+  </div>
+</div>
+
+<footer>
+  문의사항은 카페 게시판 답글로 남겨주세요.
+</footer>
+
+<script>
+// =============================================
+// ⚙️ 설정 — 여기만 수정하세요
+// =============================================
+const CONFIG = {
+  GAS_URL: 'https://script.google.com/macros/s/AKfycbxWQIMAzpknF8iShtbHgQYmF3J7vDEMY8oL8ntCU03AHKd-Dj_Vqe4ZAuTnDojVJqs/exec',
+  DEADLINE: null,
+};
+// =============================================
+
+const studentIdInput = document.getElementById('studentId');
+const studentNameInput = document.getElementById('studentName');
+const fileInput = document.getElementById('fileInput');
+const dropArea = document.getElementById('dropArea');
+const fileSelected = document.getElementById('fileSelected');
+const fileNameEl = document.getElementById('fileName');
+const fileRemoveBtn = document.getElementById('fileRemove');
+const btnSubmit = document.getElementById('btnSubmit');
+const statusBar = document.getElementById('statusBar');
+const statusText = document.getElementById('statusText');
+const spinner = document.getElementById('spinner');
+const listArea = document.getElementById('listArea');
+const countBadge = document.getElementById('countBadge');
+const successOverlay = document.getElementById('successOverlay');
+
+let selectedFile = null;
+let submissions = JSON.parse(localStorage.getItem('video_submissions') || '[]');
+
+function updateSubmitBtn() {
+  const hasId = studentIdInput.value.trim().length > 0;
+  const hasName = studentNameInput.value.trim().length > 0;
+  btnSubmit.disabled = !(hasId && hasName && selectedFile);
+}
+
+function setFile(file) {
+  if (!file) return;
+  if (file.size > 200 * 1024 * 1024) {
+    alert('파일 크기는 최대 200MB까지 허용됩니다.');
+    return;
+  }
+  selectedFile = file;
+  fileNameEl.textContent = file.name;
+  fileSelected.style.display = 'flex';
+  updateSubmitBtn();
+}
+
+fileInput.addEventListener('change', () => setFile(fileInput.files[0]));
+dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('drag-over'); });
+dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag-over'));
+dropArea.addEventListener('drop', e => {
+  e.preventDefault();
+  dropArea.classList.remove('drag-over');
+  setFile(e.dataTransfer.files[0]);
+});
+
+fileRemoveBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  selectedFile = null;
+  fileInput.value = '';
+  fileSelected.style.display = 'none';
+  updateSubmitBtn();
+});
+
+studentIdInput.addEventListener('input', updateSubmitBtn);
+studentNameInput.addEventListener('input', updateSubmitBtn);
+
+btnSubmit.addEventListener('click', async () => {
+  const studentId = studentIdInput.value.trim();
+  const studentName = studentNameInput.value.trim();
+  if (!studentId || !studentName || !selectedFile) return;
+
+  btnSubmit.disabled = true;
+  statusBar.className = 'status-bar';
+  statusBar.style.display = 'flex';
+  spinner.style.display = 'block';
+  statusText.textContent = '구글 드라이브에 업로드 중... (동영상은 시간이 걸릴 수 있습니다)';
+
+  try {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result.split(',')[1];
+      const payload = {
+        studentId,
+        studentName,
+        fileName: selectedFile.name,
+        fileData: base64,
+        mimeType: selectedFile.type || 'video/mp4',
+        submittedAt: new Date().toISOString(),
+      };
+
+      const res = await fetch(CONFIG.GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+
+      if (result.status === 'ok') {
+        const record = {
+          studentId,
+          studentName,
+          fileName: selectedFile.name,
+          submittedAt: new Date().toLocaleString('ko-KR'),
+        };
+        submissions.unshift(record);
+        localStorage.setItem('video_submissions', JSON.stringify(submissions));
+        renderList();
+
+        statusBar.style.display = 'none';
+        document.getElementById('successMsg').textContent =
+          `${studentName}(${studentId}) 학생의 동영상이 정상적으로 제출되었습니다.`;
+        successOverlay.style.display = 'flex';
+
+        studentIdInput.value = '';
+        studentNameInput.value = '';
+        selectedFile = null;
+        fileInput.value = '';
+        fileSelected.style.display = 'none';
+        updateSubmitBtn();
+      } else {
+        throw new Error(result.message || '업로드 실패');
+      }
+    };
+    reader.readAsDataURL(selectedFile);
+  } catch (err) {
+    statusBar.className = 'status-bar error';
+    spinner.style.display = 'none';
+    statusText.textContent = '오류가 발생했습니다: ' + err.message;
+    btnSubmit.disabled = false;
+  }
+});
+
+function renderList() {
+  countBadge.textContent = submissions.length + '건';
+  if (submissions.length === 0) {
+    listArea.innerHTML = '<div class="empty-state">아직 제출된 동영상이 없습니다.</div>';
+    return;
+  }
+  let html = '<table><thead><tr><th>#</th><th>학번</th><th>이름</th><th>파일명</th><th>제출일시</th><th>상태</th></tr></thead><tbody>';
+  submissions.forEach((s, i) => {
+    html += `<tr>
+      <td style="color:#C4A898;font-size:0.8rem">${submissions.length - i}</td>
+      <td><span class="team-name">${s.studentId}</span></td>
+      <td style="font-weight:600">${s.studentName}</td>
+      <td style="font-size:0.85rem;color:#555">${s.fileName}</td>
+      <td><span class="date-text">${s.submittedAt}</span></td>
+      <td><span class="status-badge">제출 완료</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  listArea.innerHTML = html;
+}
+
+function closeModal() {
+  successOverlay.style.display = 'none';
+}
+
+// 관리자 패널
+const ADMIN_PASSWORD = 'ck2026';
+
+function toggleAdminPanel() {
+  const panel = document.getElementById('adminPanel');
+  const isOpen = panel.style.display === 'flex';
+  panel.style.display = isOpen ? 'none' : 'flex';
+  if (!isOpen) document.getElementById('adminPw').focus();
+  document.getElementById('adminMsg').textContent = '';
+}
+
+function clearList() {
+  const pw = document.getElementById('adminPw').value;
+  const msg = document.getElementById('adminMsg');
+  if (pw !== ADMIN_PASSWORD) {
+    msg.textContent = '비밀번호가 틀렸습니다.';
+    document.getElementById('adminPw').value = '';
+    return;
+  }
+  if (!confirm('제출 현황 목록을 모두 초기화할까요?\n(구글 드라이브 파일은 삭제되지 않습니다)')) return;
+  submissions = [];
+  localStorage.removeItem('video_submissions');
+  renderList();
+  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('adminPw').value = '';
+  msg.textContent = '';
+}
+
+renderList();
+</script>
+</body>
+</html>
